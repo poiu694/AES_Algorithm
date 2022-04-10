@@ -16,5 +16,10 @@ string	get_bit_hex_alphabet(char ch);
 string	get_hexa_bits(string bits);
 string	get_int_to_bits(int num);
 int		get_round(string key);
+int 	get_int_4bits(string bit);
+void	shift_left_by_count(string &key, int count);
+
+void	byte_substitution(string &block);
+void	shift_rows(string &block);
 
 #endif

@@ -1,11 +1,11 @@
 NAME		= aes
 
-INCS		= aes.h \
-			  constant.h
+INCS		= aes.h constant.h
 
 SRCS		= main.cpp \
 			  aes_algorithm.cpp \
-			  str_utils.cpp
+			  str_utils.cpp \
+			  aes_utils.cpp
 
 OBJS		= $(SRCS:.cpp=.o)
 
@@ -18,7 +18,6 @@ $(NAME): $(OBJS)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@ -I $(INCS)
-
 
 all: $(NAME)
 

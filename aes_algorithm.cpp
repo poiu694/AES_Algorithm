@@ -15,16 +15,17 @@ string	aes_algorithm(string plaintext, string key)
 {
 	string	encrypt;
 	string	bin_key;
-	string	sub_key;
 	int		round;
 
-	encrypt = plaintext;
+	encrypt = get_binary_bits(plaintext);
 	bin_key = get_binary_bits(key);
 	round = get_round(bin_key);
 	for (int i=1; i<=round; i++)
 	{
-		sub_key = byte_substitution(encrypt);
-		if (i != round)
+		byte_substitution(encrypt);
+		encrypt = get_binary_bits(encrypt);
+		shift_rows(encrypt);
+		cout << "round : " << i << " " << get_hexa_bits(encrypt) << '\n';
 	}
 	return (encrypt);
 }

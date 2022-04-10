@@ -1,5 +1,12 @@
 #include "aes.h"
 
+int	get_int_4bits(string bit)
+{
+	bitset<4>	bits(bit);
+
+	return ((int)bits.to_ulong());
+}
+
 string	get_int_to_bits(int num)
 {
 	switch(num)
@@ -42,17 +49,17 @@ string	get_int_to_bits(int num)
 
 string	get_bit_hex_alphabet(char ch)
 {
-	if (ch == 'A')
+	if (ch == 'A' || ch == 'a')
 		return ("1010");
-	if (ch == 'B')
+	if (ch == 'B' || ch == 'b')
 		return ("1011");
-	if (ch == 'C')
+	if (ch == 'C' || ch == 'c')
 		return ("1100");
-	if (ch == 'D')
+	if (ch == 'D' || ch == 'd')
 		return ("1101");
-	if (ch == 'E')
+	if (ch == 'E' || ch == 'e')
 		return ("1110");
-	if (ch == 'F')
+	if (ch == 'F' || ch == 'f')
 		return ("1111");
 	return (NULL);
 }
@@ -83,8 +90,7 @@ string	get_binary_bits(string key)
 	for (int i=0; i<key.length(); i++)
 	{
 		bit4 = bitset<4>(c_key[i]);
-		if (c_key[i] == 'A' || c_key[i] == 'B' || c_key[i] == 'C'
-				|| c_key[i] == 'D' || c_key[i] == 'E' || c_key[i] == 'F')
+		if (('a' <= c_key[i] && c_key[i] <= 'z') || ('A' <= c_key[i] && c_key[i] <= 'Z'))
 			ret += get_bit_hex_alphabet(c_key[i]);
 		else
 			ret += bit4.to_string();
