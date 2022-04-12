@@ -116,3 +116,55 @@ void	mix_column(string &block)
 	}
 	block = get_binary_bits(temp);
 }
+
+string	get_sbox_value(string key)
+{
+	int		row;
+	int		column;
+	string	left_bytes;
+	string	right_bytes;
+	string	temp;
+
+	temp = "";
+	for (int i=0; i<key.length(); i+=8)
+	{
+		left_bytes = key.substr(i, 4);
+		right_bytes = key.substr(i + 4, 4);
+		row = get_int_4bits(left_bytes);
+		column = get_int_4bits(right_bytes);
+	
+		temp += get_binary_bits(SBOX[16 * row + column].substr(2, 2));
+	}
+	return (temp);
+}
+
+string	get_xor_rcon(string key, int round)
+{
+	bitset<32>	bit1(key);
+	bitset<32>	bit2(get_binary_bits(ROUND_CONSTANT[round]));
+
+	return ((bit1 ^ bit2).to_string());
+}
+
+void	add_round_key(string &block, string &key, int round)
+{
+	string	key1;
+	string	key2;
+	string	key3;
+	string	key4;
+
+	key1 = key.substr(0, 32);
+	key2 = key.substr(32, 32);
+	key3 = key.substr(64, 32);
+	key4 = key.substr(96, 32);
+	shift_left_by_count(key4, 8);
+	key4 = get_sbox_value(key4);
+	key4 = get_xor_rcon(key4, round);
+	key1 = xor_32bit(key1, key4);
+	key2 = xor_32bit(key1, key2);
+	key3 = xor_32bit(key2, key3);
+	key4 = xor_32bit(key3, key4);
+
+	block = xor_128bit(block, key);
+	key = key1 + key2 + key3 + key4;
+}

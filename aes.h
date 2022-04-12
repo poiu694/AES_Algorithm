@@ -22,8 +22,11 @@ void	shift_left_by_count(string &key, int count);
 void	byte_substitution(string &block);
 void	shift_rows(string &block);
 void	mix_column(string &block);
+void	add_round_key(string &block, string &key, int round);
 
-string xor_8bit(string a, string b);
-string xor_8bit_4param(string a, string b, string c, string d);
+string	xor_8bit(string a, string b);
+string	xor_8bit_4param(string a, string b, string c, string d);
+string	xor_128bit(string a, string b);
+string	xor_32bit(string a, string b);
 
 #endif

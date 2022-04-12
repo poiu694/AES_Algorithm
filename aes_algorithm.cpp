@@ -20,11 +20,14 @@ string	aes_algorithm(string plaintext, string key)
 	encrypt = get_binary_bits(plaintext);
 	bin_key = get_binary_bits(key);
 	round = get_round(bin_key);
+	add_round_key(encrypt, bin_key, 0);
 	for (int i=1; i<=round; i++)
 	{
 		byte_substitution(encrypt);
 		shift_rows(encrypt);
-		mix_column(encrypt);
+		if (i != round)
+			mix_column(encrypt);
+		add_round_key(encrypt, bin_key, i);
 	}
 	encrypt = get_hexa_bits(encrypt);
 	return (encrypt);

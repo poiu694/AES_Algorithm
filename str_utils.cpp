@@ -126,3 +126,19 @@ string	xor_8bit_4param(string a, string b, string c, string d)
 
 	return ((bit1 ^ bit2 ^ bit3 ^ bit4).to_string());
 }
+
+string	xor_128bit(string a, string b)
+{
+	bitset<128>	bit1(a);
+	bitset<128>	bit2(b);
+
+	return ((bit1 ^ bit2).to_string());
+}
+
+string	xor_32bit(string a, string b)
+{
+	bitset<32>	bit1(a);
+	bitset<32>	bit2(b);
+
+	return ((bit1 ^ bit2).to_string());
+}
