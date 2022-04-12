@@ -19,7 +19,7 @@ void	byte_substitution(string &block)
 		
 		temp += get_hexa_bits(get_binary_bits(SBOX[16 * row + column].substr(2, 2)));
 	}
-	block = temp;
+	block = get_binary_bits(temp);
 }
 
 void	shift_rows(string &block)
@@ -39,3 +39,80 @@ void	shift_rows(string &block)
 	block = byte1 + byte2 + byte3 + byte4;
 }
 
+void	divide_column(string block, string &col1, string &col2, string &col3, string &col4)
+{
+	block = get_hexa_bits(block);
+	for (int i=0; i<block.length(); i++)
+	{
+		if (i % 8 <= 1)
+			col1 += block[i];
+		else if (i % 8 <= 3)
+			col2 += block[i];
+		else if (i % 8 <= 5)
+			col3 += block[i];
+		else
+			col4 += block[i];
+	}
+}
+
+string	mval(int value, string col)
+{
+	string		bin_col;
+	bitset<8>	bit;
+	bitset<8>	bit2;
+
+	bin_col = get_binary_bits(col);
+	if (value == 1)
+		return (bin_col);
+	else if (value == 2)
+	{
+		bit = bitset<8>(get_binary_bits(to_string(stoi(bin_col, nullptr, 2) * value)));
+		return (bit.to_string());
+	}
+	bit = bitset<8>(bin_col);
+	bit2 = bitset<8>(mval(2, col));
+	return ((bit ^ bit2).to_string());
+}
+
+string	get_mix_column(string col)
+{
+	string	ret;
+
+	ret = xor_8bit_4param(mval(2, col.substr(0, 2)), mval(3, col.substr(2, 2)),
+								mval(1, col.substr(4, 2)), mval(1, col.substr(6, 2)));
+	ret += xor_8bit_4param(mval(1, col.substr(0, 2)), mval(2, col.substr(2, 2)),
+								mval(3, col.substr(4, 2)), mval(1, col.substr(6, 2)));
+	ret += xor_8bit_4param(mval(1, col.substr(0, 2)), mval(1, col.substr(2, 2)),
+								mval(2, col.substr(4, 2)), mval(3, col.substr(6, 2)));
+	ret += xor_8bit_4param(mval(3, col.substr(0, 2)), mval(1, col.substr(2, 2)),
+								mval(1, col.substr(4, 2)), mval(2, col.substr(6, 2)));
+	return (get_hexa_bits(ret));
+}
+
+void	mix_column(string &block)
+{
+	string	col1;
+	string	col2;
+	string	col3;
+	string	col4;
+	string	temp;
+
+	temp = "";
+	divide_column(block, col1, col2, col3, col4);
+	col1 = get_mix_column(col1);
+	col2 = get_mix_column(col2);
+	col3 = get_mix_column(col3);
+	col4 = get_mix_column(col4);
+	for (int i=0; i<16; i++)
+	{
+		if (i % 4 == 0)
+			temp += col1.substr(i / 2, 2);
+		else if (i % 4 == 1)
+			temp += col2.substr((i - 1) / 2, 2);
+		else if (i % 4 == 2)
+			temp += col3.substr((i - 2) / 2, 2);
+		else
+			temp += col4.substr((i - 3) / 2, 2);
+	}
+	block = get_binary_bits(temp);
+}

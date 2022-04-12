@@ -109,3 +109,20 @@ void	shift_left_by_count(string &key, int count)
 	rotate(key.begin(), key.begin() + count, key.end());
 }
 
+string	xor_8bit(string a, string b)
+{
+	bitset<8>	bit1(a);
+	bitset<8>	bit2(b);
+
+	return ((bit1 ^ bit2).to_string());
+}
+
+string	xor_8bit_4param(string a, string b, string c, string d)
+{
+	bitset<8>	bit1(a);
+	bitset<8>	bit2(b);
+	bitset<8>	bit3(c);
+	bitset<8>	bit4(d);
+
+	return ((bit1 ^ bit2 ^ bit3 ^ bit4).to_string());
+}

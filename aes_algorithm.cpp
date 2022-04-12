@@ -23,9 +23,9 @@ string	aes_algorithm(string plaintext, string key)
 	for (int i=1; i<=round; i++)
 	{
 		byte_substitution(encrypt);
-		encrypt = get_binary_bits(encrypt);
 		shift_rows(encrypt);
-		cout << "round : " << i << " " << get_hexa_bits(encrypt) << '\n';
+		mix_column(encrypt);
 	}
+	encrypt = get_hexa_bits(encrypt);
 	return (encrypt);
 }
