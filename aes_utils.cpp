@@ -163,7 +163,7 @@ void	add_round_key(string &block, string &key, int round)
 	key1 = xor_32bit(key1, key4);
 	key2 = xor_32bit(key1, key2);
 	key3 = xor_32bit(key2, key3);
-	key4 = xor_32bit(key3, key4);
+	key4 = xor_32bit(key3, key.substr(96, 32));
 
 	block = xor_128bit(block, key);
 	key = key1 + key2 + key3 + key4;
