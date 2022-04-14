@@ -48,12 +48,10 @@ void	mix_column(string &block)
 	string	temp;
 
 	divide_column(block, col1, col2, col3, col4);
-//	cout << "COL : " << get_hexa_bits(col1) << " " << get_hexa_bits(col2) << " " << get_hexa_bits(col3) << " " << get_hexa_bits(col4) << '\n';
 	col1 = get_mix_column(col1);
 	col2 = get_mix_column(col2);
 	col3 = get_mix_column(col3);
 	col4 = get_mix_column(col4);
-	cout << col1 << " " << col2 << " " << col3 << " " << col4 << '\n';
 	temp = "";
 	for (int i=0; i<16; i++)
 	{
@@ -80,7 +78,6 @@ void	add_round_key(string &block, string &key, int round)
 
 	divide_column(key, key1, key2, key3, origin_key4);
 	key4 = origin_key4;
-//	cout << get_hexa_bits(key1) << " " << get_hexa_bits(key2) << " " << get_hexa_bits(key3) << " " << get_hexa_bits(key4) << '\n';
 	shift_left_by_count(key4, 8);
 	key4 = get_sbox_value(key4);
 	key4 = get_xor_rcon(key4, round);

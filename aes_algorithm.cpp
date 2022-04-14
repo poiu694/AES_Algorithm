@@ -29,6 +29,7 @@ string	aes_algorithm(string plaintext, string key)
 			mix_column(encrypt);
 		add_round_key(encrypt, bin_key, i);
 	}
+	encrypt = reverse_row_col(encrypt);
 	encrypt = get_hexa_bits(encrypt);
 	return (encrypt);
 }

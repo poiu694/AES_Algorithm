@@ -30,6 +30,7 @@ string	get_mix_column(string col);
 string	get_sbox_value(string key);
 string	get_xor_rcon(string key, int round);
 string	mval(int value, string col);
+string	reverse_row_col(string block);
 
 string	xor_8bit(string a, string b);
 string	xor_8bit_4param(string a, string b, string c, string d);

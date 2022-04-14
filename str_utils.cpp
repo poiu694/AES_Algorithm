@@ -142,3 +142,16 @@ string	xor_32bit(string a, string b)
 
 	return ((bit1 ^ bit2).to_string());
 }
+
+string	reverse_row_col(string block)
+{
+	string	col1;
+	string	col2;
+	string	col3;
+	string	col4;
+	string	rev_block;
+
+	divide_column(block, col1, col2, col3, col4);
+	rev_block = col1 + col2 + col3 + col4;
+	return (rev_block);
+}
