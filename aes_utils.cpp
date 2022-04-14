@@ -39,6 +39,91 @@ void	shift_rows(string &block)
 	block = byte1 + byte2 + byte3 + byte4;
 }
 
+void	mix_column(string &block)
+{
+	string	col1;
+	string	col2;
+	string	col3;
+	string	col4;
+	string	temp;
+
+	divide_column(block, col1, col2, col3, col4);
+//	cout << "COL : " << get_hexa_bits(col1) << " " << get_hexa_bits(col2) << " " << get_hexa_bits(col3) << " " << get_hexa_bits(col4) << '\n';
+	col1 = get_mix_column(col1);
+	col2 = get_mix_column(col2);
+	col3 = get_mix_column(col3);
+	col4 = get_mix_column(col4);
+	cout << col1 << " " << col2 << " " << col3 << " " << col4 << '\n';
+	temp = "";
+	for (int i=0; i<16; i++)
+	{
+		if (i % 4 == 0)
+			temp += col1.substr(i / 2, 2);
+		else if (i % 4 == 1)
+			temp += col2.substr((i - 1) / 2, 2);
+		else if (i % 4 == 2)
+			temp += col3.substr((i - 2) / 2, 2);
+		else
+			temp += col4.substr((i - 3) / 2, 2);
+	}
+	block = get_binary_bits(temp);
+}
+
+void	add_round_key(string &block, string &key, int round)
+{
+	string	key1;
+	string	key2;
+	string	key3;
+	string	key4;
+	string	origin_key4;
+	string	temp;
+
+	divide_column(key, key1, key2, key3, origin_key4);
+	key4 = origin_key4;
+//	cout << get_hexa_bits(key1) << " " << get_hexa_bits(key2) << " " << get_hexa_bits(key3) << " " << get_hexa_bits(key4) << '\n';
+	shift_left_by_count(key4, 8);
+	key4 = get_sbox_value(key4);
+	key4 = get_xor_rcon(key4, round);
+	key1 = xor_32bit(key1, key4);
+	key2 = xor_32bit(key1, key2);
+	key3 = xor_32bit(key2, key3);
+	key4 = xor_32bit(key3, origin_key4);
+
+	block = xor_128bit(block, key);
+	temp = "";
+	for (int i=0; i<32; i++)
+ 	{
+ 		if (i % 4 == 0)
+ 			temp += key1.substr(i, 8);
+ 		else if (i % 4 == 1)
+ 			temp += key2.substr((i - 1), 8);
+ 		else if (i % 4 == 2)
+ 			temp += key3.substr((i - 2), 8);
+ 		else
+		{
+ 			temp += key4.substr((i - 3), 8);
+			i += 4;
+		}
+ 	}
+	key = temp;
+}
+
+string	get_state(string plaintext)
+{
+	string	state;
+
+	state = "";
+	for (int i=0; i<8; i+=2)
+	{
+		for (int j=i; j<32; j+=8)
+		{
+			state += plaintext.substr(j, 2);
+		}
+	}
+	state = get_binary_bits(state);
+	return (state);
+}
+
 void	divide_column(string block, string &col1, string &col2, string &col3, string &col4)
 {
 	block = get_hexa_bits(block);
@@ -53,6 +138,26 @@ void	divide_column(string block, string &col1, string &col2, string &col3, strin
 		else
 			col4 += block[i];
 	}
+	col1 = get_binary_bits(col1);
+	col2 = get_binary_bits(col2);
+	col3 = get_binary_bits(col3);
+	col4 = get_binary_bits(col4);
+}
+
+// x4 x3 x 1
+string	get_2mval(string col)
+{
+	bitset<8>	constant("00011011");
+	bitset<8>	bits;
+	string		temp;
+
+	temp = col;
+	shift_left_by_count(temp, 1);
+	temp[temp.length() - 1] = '0';
+	if (col[0] == '0')
+		return (temp);
+	bits = bitset<8>(temp);
+	return ((bits ^ constant).to_string());
 }
 
 string	mval(int value, string col)
@@ -63,14 +168,15 @@ string	mval(int value, string col)
 
 	bin_col = get_binary_bits(col);
 	if (value == 1)
+	{
 		return (bin_col);
+	}
 	else if (value == 2)
 	{
-		bit = bitset<8>(get_binary_bits(to_string(stoi(bin_col, nullptr, 2) * value)));
-		return (bit.to_string());
+		return (get_2mval(bin_col));
 	}
 	bit = bitset<8>(bin_col);
-	bit2 = bitset<8>(mval(2, col));
+	bit2 = bitset<8>(get_2mval(bin_col));
 	return ((bit ^ bit2).to_string());
 }
 
@@ -78,6 +184,7 @@ string	get_mix_column(string col)
 {
 	string	ret;
 
+	col = get_hexa_bits(col);
 	ret = xor_8bit_4param(mval(2, col.substr(0, 2)), mval(3, col.substr(2, 2)),
 								mval(1, col.substr(4, 2)), mval(1, col.substr(6, 2)));
 	ret += xor_8bit_4param(mval(1, col.substr(0, 2)), mval(2, col.substr(2, 2)),
@@ -87,34 +194,6 @@ string	get_mix_column(string col)
 	ret += xor_8bit_4param(mval(3, col.substr(0, 2)), mval(1, col.substr(2, 2)),
 								mval(1, col.substr(4, 2)), mval(2, col.substr(6, 2)));
 	return (get_hexa_bits(ret));
-}
-
-void	mix_column(string &block)
-{
-	string	col1;
-	string	col2;
-	string	col3;
-	string	col4;
-	string	temp;
-
-	temp = "";
-	divide_column(block, col1, col2, col3, col4);
-	col1 = get_mix_column(col1);
-	col2 = get_mix_column(col2);
-	col3 = get_mix_column(col3);
-	col4 = get_mix_column(col4);
-	for (int i=0; i<16; i++)
-	{
-		if (i % 4 == 0)
-			temp += col1.substr(i / 2, 2);
-		else if (i % 4 == 1)
-			temp += col2.substr((i - 1) / 2, 2);
-		else if (i % 4 == 2)
-			temp += col3.substr((i - 2) / 2, 2);
-		else
-			temp += col4.substr((i - 3) / 2, 2);
-	}
-	block = get_binary_bits(temp);
 }
 
 string	get_sbox_value(string key)
@@ -146,25 +225,3 @@ string	get_xor_rcon(string key, int round)
 	return ((bit1 ^ bit2).to_string());
 }
 
-void	add_round_key(string &block, string &key, int round)
-{
-	string	key1;
-	string	key2;
-	string	key3;
-	string	key4;
-
-	key1 = key.substr(0, 32);
-	key2 = key.substr(32, 32);
-	key3 = key.substr(64, 32);
-	key4 = key.substr(96, 32);
-	shift_left_by_count(key4, 8);
-	key4 = get_sbox_value(key4);
-	key4 = get_xor_rcon(key4, round);
-	key1 = xor_32bit(key1, key4);
-	key2 = xor_32bit(key1, key2);
-	key3 = xor_32bit(key2, key3);
-	key4 = xor_32bit(key3, key.substr(96, 32));
-
-	block = xor_128bit(block, key);
-	key = key1 + key2 + key3 + key4;
-}

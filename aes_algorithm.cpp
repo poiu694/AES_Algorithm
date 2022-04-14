@@ -11,22 +11,6 @@ int	get_round(string key)
 	return (0);
 }
 
-string	get_state(string plaintext)
-{
-	string	state;
-
-	state = "";
-	for (int i=0; i<8; i+=2)
-	{
-		for (int j=i; j<32; j+=8)
-		{
-			state += plaintext.substr(j, 2);
-		}
-	}
-	state = get_binary_bits(state);
-	return (state);
-}
-
 string	aes_algorithm(string plaintext, string key)
 {
 	string	encrypt;
